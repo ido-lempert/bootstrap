@@ -238,7 +238,9 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
 
                 element.on('keydown', function(e){
                     var ESC_KEY = 27;
-                    if (e.keyCode == ESC_KEY) hide();
+                    if (e.keyCode == ESC_KEY) {
+                      hide();
+                    }
                 });
             }
 
