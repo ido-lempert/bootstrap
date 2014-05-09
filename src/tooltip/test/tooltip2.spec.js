@@ -39,6 +39,30 @@ describe('tooltip directive', function () {
     }
   }
 
+    function triggerKeyDown(element, key, ctrl) {
+        var keyCodes = {
+            'enter': 13,
+            'space': 32,
+            'pageup': 33,
+            'pagedown': 34,
+            'end': 35,
+            'home': 36,
+            'left': 37,
+            'up': 38,
+            'right': 39,
+            'down': 40,
+            'esc': 27
+        };
+        var e = $.Event('keydown');
+        e.which = keyCodes[key];
+        e.keyCode = key;
+
+        if (ctrl) {
+            e.ctrlKey = true;
+        }
+        element.trigger(e);
+    }
+
   describe('basic scenarios with default options', function () {
 
     it('shows default tooltip on mouse enter and closes on mouse leave', function () {
@@ -132,5 +156,26 @@ describe('tooltip directive', function () {
     closeTooltip(fragment.find('span'));
     expect(fragment).not.toHaveOpenTooltips();
   });
+
+    it('should have WAI-ARIA support', function () {
+        var fragment = compileTooltip('<span tooltip="tooltip text">Trigger here</span>');
+        var tooltip = fragment.find('span');
+        tooltip.trigger( 'mouseenter' );
+
+        expect(tooltip.attr('role')).toBe('tooltip');
+        expect(tooltip.attr('tabindex')).toBe('0');
+        expect(tooltip.attr('aria-describedby')).toBeDefined();
+
+        var tooltipPopup = fragment.find('div.tooltip');
+        expect(tooltipPopup.length).toBe(1);
+        expect(tooltipPopup.attr('id')).toBe(tooltip.attr('aria-describedby'));
+        expect(tooltipPopup.attr('tabindex')).toBe('-1');
+
+        expect(fragment).toHaveOpenTooltips();
+
+        triggerKeyDown(tooltip, 27);
+        $timeout.flush();
+        expect(fragment).not.toHaveOpenTooltips();
+    });
 
 });

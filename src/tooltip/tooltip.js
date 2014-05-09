@@ -226,12 +226,31 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
               }
             }
 
+            function addAccessibility(){
+                var popupId = 'tooltip_' + scope.$id;
+
+                element.attr('role', 'tooltip');
+                element.attr('tabindex', '0');
+                element.attr('aria-describedby', popupId);
+
+                tooltip.attr('id', popupId);
+                tooltip.attr('tabindex', '-1');
+
+                element.on('keydown', function(e){
+                    var ESC_KEY = 27;
+                    if (e.keyCode == ESC_KEY) hide();
+                });
+            }
+
             function createTooltip() {
               // There can only be one tooltip element per directive shown at once.
               if (tooltip) {
                 removeTooltip();
               }
               tooltip = tooltipLinker(scope, function () {});
+
+              //WAR-ARIA
+              addAccessibility();
 
               // Get contents rendered into the tooltip
               scope.$digest();
